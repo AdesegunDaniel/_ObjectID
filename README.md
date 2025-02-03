@@ -20,8 +20,8 @@ To get started with the ObjectID model, follow these steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/AdesegunDaniel/_BiologyRunto.git
-   cd _BiologyRunto
+   git clone https:
+   cd
    ```
 
 2. **Install dependencies**:
