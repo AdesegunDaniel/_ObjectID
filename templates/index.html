@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time ObjectID Processing</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            background-color: black; /* Changed background to black */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #stopButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #stopButton:hover {
+            background-color: #ff1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 style="color: white;">Real-Time ObjectID Processing</h1>
+        <video id="video" width="640" height="480" autoplay style="display:none;"></video>
+        <canvas id="hiddenCanvas" width="640" height="480" style="display:none;"></canvas>
+        <canvas id="canvas" width="640" height="480"></canvas>
+        <button id="stopButton">Stop</button>
+    </div>
+    <script>
+        const video = document.getElementById('video');
+        const hiddenCanvas = document.getElementById('hiddenCanvas');
+        const hiddenContext = hiddenCanvas.getContext('2d');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const stopButton = document.getElementById('stopButton');
+        const socket = io();
+        let intervalId;
+
+        // Get access to the camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(err => {
+                console.error("Error accessing the camera: ", err);
+            });
+
+        // Capture and send frames to the server
+        function startProcessing() {
+            intervalId = setInterval(() => {
+                hiddenContext.drawImage(video, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+                const imageData = hiddenCanvas.toDataURL('image/jpeg');
+
+                socket.emit('process_image', { image: imageData });
+            }, 1000); // Adjust the interval as needed
+        }
+
+        // Receive processed images from the server
+        socket.on('processed_image', data => {
+            const img = new Image();
+            img.src = 'data:image/jpeg;base64,' + data.processed_image;
+            img.onload = () => {
+                context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
+        });
+
+        // Stop processing and redirect to a new page
+        stopButton.addEventListener('click', () => {
+            clearInterval(intervalId);
+            socket.disconnect();
+            video.pause();
+            video.srcObject.getTracks().forEach(track => track.stop());
+            window.location.href = "{{ url_for('obj_home') }}";
+        });
+
+        // Start processing when the page loads
+        startProcessing();
+    </script>
+</body>
+</html>
