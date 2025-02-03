@@ -1,0 +1,4 @@
+Flask
+flask-socketio
+opencv-python
+ultralytics
