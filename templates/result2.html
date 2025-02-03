@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black; /* Changed background to black */
+        }
+        .container {
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid #ccc;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            transform: scale(2);
+        }
+        .stats-container {
+            margin-right: 40px;
+            max-width: 600px;
+        }
+        .stats-container h2 {
+            margin-top: 0;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 18px; /* Increase the font size */
+            color: white; /* Set footer text to white */
+            text-align: center; /* Center the footer text */
+            width: 100%; /* Ensure footer spans the full width */
+            position: absolute; /* Position the footer at the bottom */
+            bottom: 10px; /* Adjust the bottom position */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="video-container">
+            <video controls id="videoPlayer">
+                <source src="{{ url_for('static', filename='processed_image.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+    <footer>
+        Model built by Adesegun Oluwademilade Daniel
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.addEventListener('error', function() {
+                console.error('Error loading video:', videoPlayer.error);
+            });
+        });
+    </script>
+</body>
+</html>
